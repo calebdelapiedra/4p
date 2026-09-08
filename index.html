@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4P — Alinea tu negocio y crece</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0a0a0a;
+    --bg2:#131313;
+    --red:#e5231b;
+    --white:#f2f0ec;
+    --yellow:#f2b705;
+    --gray:#8f8c86;
+    --line:#2a2a2a;
+    --font: -apple-system, "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--white); font-family:var(--font);
+    min-height:100vh; display:flex; justify-content:center;
+    background-image:
+      radial-gradient(circle at 8% 10%, rgba(229,35,27,0.10), transparent 35%),
+      radial-gradient(circle at 92% 85%, rgba(242,183,5,0.08), transparent 40%);
+  }
+  .app{ width:100%; max-width:640px; padding:28px 22px 60px; }
+  .brand{ display:flex; align-items:baseline; gap:10px; margin-bottom:26px; }
+  .brand .num{ color:var(--red); font-weight:900; font-size:26px; letter-spacing:-1px;}
+  .brand .letter{ color:var(--white); font-weight:900; font-size:26px; letter-spacing:-1px;}
+  .brand .tag{ color:var(--gray); font-size:11px; letter-spacing:2px; text-transform:uppercase; margin-left:6px;}
+  .progress{ display:flex; gap:6px; margin-bottom:30px; }
+  .progress span{ flex:1; height:3px; background:var(--line); border-radius:2px; overflow:hidden;}
+  .progress span i{ display:block; height:100%; width:0%; background:var(--red); transition:width .3s;}
+  .screen{ display:none; animation:fade .25s ease; }
+  .screen.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+  h1{ font-size:30px; line-height:1.15; margin:0 0 10px; font-weight:900; letter-spacing:-0.5px;}
+  h1 .accent{ color:var(--red); }
+  h1 .accent2{ color:var(--yellow); }
+  h2{ font-size:20px; margin:0 0 4px; font-weight:800; }
+  .sub{ color:var(--gray); font-size:14.5px; line-height:1.5; margin-bottom:26px; }
+  .eyebrow{ color:var(--yellow); font-size:11px; letter-spacing:2px; text-transform:uppercase; font-weight:700; margin-bottom:8px;}
+  label{ display:block; font-size:13px; color:var(--gray); margin:16px 0 6px; }
+  label:first-of-type{ margin-top:0; }
+  input[type=text], input[type=email], input[type=tel], input[type=number], textarea, select{
+    width:100%; background:var(--bg2); border:1px solid var(--line); color:var(--white);
+    padding:11px 12px; border-radius:6px; font-size:14.5px; font-family:var(--font);
+  }
+  textarea{ min-height:64px; resize:vertical; }
+  input:focus, textarea:focus, select:focus{ outline:none; border-color:var(--red); }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+  .card{ background:var(--bg2); border:1px solid var(--line); border-radius:10px; padding:18px; margin-bottom:16px; }
+  .card h3{ font-size:14px; margin:0 0 12px; color:var(--white); text-transform:uppercase; letter-spacing:1px; }
+  .slider-row{ display:flex; align-items:center; gap:14px; margin-top:6px;}
+  input[type=range]{ flex:1; accent-color:var(--red); }
+  .slider-val{ width:34px; text-align:center; font-weight:800; color:var(--yellow); font-size:16px;}
+  .check-item{ display:flex; align-items:center; gap:10px; padding:7px 0; font-size:14px; color:var(--white); border-bottom:1px solid var(--line); }
+  .check-item:last-child{ border-bottom:none; }
+  .check-item input{ width:16px; height:16px; accent-color:var(--red); }
+  table.channels{ width:100%; border-collapse:collapse; font-size:13px; margin-top:6px;}
+  table.channels th{ text-align:left; color:var(--gray); font-weight:600; padding:6px 4px; border-bottom:1px solid var(--line);}
+  table.channels td{ padding:8px 4px; border-bottom:1px solid var(--line); }
+  table.channels input{ width:16px; height:16px; accent-color:var(--yellow); }
+  .btns{ display:flex; justify-content:space-between; gap:12px; margin-top:28px; }
+  button{ font-family:var(--font); cursor:pointer; border:none; border-radius:7px; font-weight:800; font-size:14px; letter-spacing:.3px; padding:13px 22px; }
+  .btn-primary{ background:var(--red); color:#fff; flex:1; }
+  .btn-primary:hover{ background:#c91d16; }
+  .btn-secondary{ background:transparent; color:var(--gray); border:1px solid var(--line); }
+  .btn-secondary:hover{ color:var(--white); border-color:var(--gray); }
+  .btn-yellow{ background:var(--yellow); color:#1a1a1a; width:100%; }
+  .btn-yellow:hover{ background:#d9a204; }
+  .hint{ font-size:11.5px; color:var(--gray); margin-top:4px; }
+  .result-total{ text-align:center; padding:26px 0 10px; }
+  .result-total .num{ font-size:64px; font-weight:900; color:var(--white); line-height:1; }
+  .result-total .of40{ color:var(--gray); font-size:16px; }
+  .result-total .tag{ display:inline-block; margin-top:10px; padding:6px 16px; border-radius:20px; font-size:13px; font-weight:700; }
+  .bars{ display:flex; gap:14px; align-items:flex-end; height:150px; margin:24px 0 6px; padding:0 6px; }
+  .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; }
+  .bar-fill{ width:100%; border-radius:6px 6px 0 0; transition:height .5s; }
+  .bar-label{ font-size:11px; color:var(--gray); margin-top:8px; text-align:center; text-transform:uppercase; letter-spacing:.5px;}
+  .bar-score{ font-size:13px; font-weight:800; margin-top:2px;}
+  .priority-box{ background:rgba(242,183,5,0.08); border:1px solid rgba(242,183,5,0.35); border-radius:10px; padding:16px; margin-top:20px; }
+  .priority-box b{ color:var(--yellow); }
+  .final-actions{ display:flex; flex-direction:column; gap:12px; margin-top:24px; }
+  .btn-outline-cta{ background:transparent; border:1.5px solid var(--red); color:var(--white); width:100%; padding:14px; }
+  .footer-note{ text-align:center; color:var(--gray); font-size:11px; margin-top:30px; letter-spacing:1px; }
+  .footer-note b{ color:var(--red); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand"><span class="num">4</span><span class="letter">P</span><span class="tag">Power 3 · Caleb De La Piedra</span></div>
+  <div class="progress" id="progressBar"></div>
+
+  <!-- 0: HERO -->
+  <div class="screen active" data-screen="0">
+    <h1>Alinea tu <span class="accent">negocio</span> y <span class="accent2">crece</span></h1>
+    <p class="sub">En 10–15 minutos vas a descubrir cuál de las 4P — Producto, Precio, Plaza o Promoción — está frenando realmente el crecimiento de tu negocio, y vas a salir con un plan de acción de 7 y 30 días.</p>
+    <button class="btn-primary" style="width:100%" onclick="goTo(1)">Comenzar mi diagnóstico</button>
+  </div>
+
+  <!-- 1: CONTACTO -->
+  <div class="screen" data-screen="1">
+    <div class="eyebrow">Antes de empezar</div>
+    <h2>¿A dónde te enviamos tu diagnóstico?</h2>
+    <p class="sub">Al final vas a descargar tu plan personalizado en PDF.</p>
+    <label>Nombre</label><input type="text" id="c_nombre">
+    <label>Nombre de tu negocio (opcional)</label><input type="text" id="c_negocio">
+    <label>Email</label><input type="email" id="c_email">
+    <label>WhatsApp</label>
+    <div class="row2" style="grid-template-columns:150px 1fr;">
+      <select id="c_pais"></select>
+      <input type="tel" id="c_whatsapp" placeholder="999 999 999">
+    </div>
+    <label>¿Cuánto factura tu negocio actualmente al mes? (USD)</label>
+    <input type="number" id="c_facturacion" placeholder="Ej: 8000">
+    <p class="hint">Con esto vamos a comparar lo que ya facturas contra lo que realmente necesitas facturar.</p>
+    <div class="btns"><button class="btn-secondary" onclick="goTo(0)">Atrás</button><button class="btn-primary" onclick="goTo(2)">Continuar</button></div>
+  </div>
+
+  <!-- 2: PRODUCTO -->
+  <div class="screen" data-screen="2">
+    <div class="eyebrow">P 1 de 4</div>
+    <h2>Producto</h2>
+    <p class="sub">No vendas lo que haces. Resuelve lo que importa.</p>
+    <div class="card"><h3>Transforma tu producto</h3>
+      <p class="hint">Ejemplo — <b>No:</b> "Hago diseño gráfico." <b>Sino:</b> "Ayudo a empresas que necesitan verse profesionales a construir una identidad de marca que les permita posicionarse y cobrar mejor."</p>
+      <label>Yo vendo</label><input type="text" id="p_vendo" placeholder="Ej: Hago diseño gráfico">
+      <label>Pero realmente ayudo a mi cliente a</label><input type="text" id="p_ayudo" placeholder="Ej: construir una identidad de marca que le permita cobrar mejor">
+      <label>El problema que resuelvo es</label><input type="text" id="p_problema" placeholder="Ej: no logra diferenciarse de su competencia">
+      <label>El resultado que busca mi cliente es</label><input type="text" id="p_resultado" placeholder="Ej: verse profesional y vender más">
+    </div>
+    <div class="card"><h3>El problema real</h3>
+      <p class="hint">Un mismo cliente casi siempre tiene los 4 tipos de problema a la vez. Responde pensando en tu cliente típico.</p>
+      <label>Funcional — ¿qué necesita solucionar?</label><input type="text" id="p_funcional" placeholder="Ej: necesita una web que le genere clientes">
+      <label>Emocional — ¿cómo quiere sentirse?</label><input type="text" id="p_emocional" placeholder="Ej: sentirse seguro y respaldado">
+      <label>Económico — ¿qué dinero pierde o deja de ganar?</label><input type="text" id="p_economico" placeholder="Ej: pierde ventas por no tener presencia digital">
+      <label>Social — ¿cómo quiere ser percibido?</label><input type="text" id="p_social" placeholder="Ej: como un negocio serio y confiable">
+      <div class="row2"><div><label>Mi cliente está ANTES en</label><input type="text" id="p_antes" placeholder="Ej: desordenado, sin identidad clara"></div><div><label>Y pasa a estar DESPUÉS en</label><input type="text" id="p_despues" placeholder="Ej: con una marca sólida y coherente"></div></div>
+    </div>
+    <div class="card"><h3>Prueba de sustitución</h3>
+      <p class="hint" style="margin-bottom:8px;">Si mañana desapareciera tu negocio, ¿qué alternativa usaría tu cliente?</p>
+      <label>3 competidores principales</label>
+      <div class="row3"><input type="text" id="p_comp1"><input type="text" id="p_comp2"><input type="text" id="p_comp3"></div>
+      <label>¿Qué hacen todos igual?</label><input type="text" id="p_igual">
+      <label>¿Qué puedes hacer diferente?</label><input type="text" id="p_diferente">
+    </div>
+    <div class="card"><h3>Checklist Producto</h3>
+      <div id="p_checklist"></div>
+    </div>
+    <div class="card"><h3>Tu nota en Producto</h3>
+      <p class="hint">Se calcula sola según cuántos puntos del checklist de arriba marcaste — así el diagnóstico refleja lo que realmente contestaste, no lo que crees que deberías sacar.</p>
+      <div class="result-total" style="padding:8px 0;"><div class="num" id="p_nota_val" style="font-size:40px;">0</div><div class="of40" style="font-size:13px;">de 10</div></div>
+      <input type="hidden" id="p_nota" value="0">
+    </div>
+    <div class="btns"><button class="btn-secondary" onclick="goTo(1)">Atrás</button><button class="btn-primary" onclick="goTo(3)">Continuar</button></div>
+  </div>
+
+  <!-- 3: PRECIO -->
+  <div class="screen" data-screen="3">
+    <div class="eyebrow">P 2 de 4</div>
+    <h2>Precio</h2>
+    <p class="sub">El precio es lo que cobras. El valor es lo que el cliente cree que recibe.</p>
+    <div class="card"><h3>¿Cómo cobras?</h3>
+      <select id="pr_modelo">
+        <option>Por producto</option><option>Por hora</option><option>Por proyecto</option>
+        <option>Por paquete</option><option>Por suscripción</option><option>Por resultado</option><option>Otro</option>
+      </select>
+    </div>
+    <div class="card"><h3>Calcula tu precio mínimo</h3>
+      <p class="hint">Fórmula: (costos + sueldo deseado + margen + reinversión) + % de impuestos sobre ese subtotal = facturación necesaria. Ejemplo: si ese subtotal es $12,000 y tu impuesto es 18%, tu facturación necesaria es $14,160. Con 10 clientes, tu ticket promedio es $1,416.</p>
+      <div class="row2">
+        <div><label>Costos mensuales (USD)</label><input type="number" id="pr_costos" oninput="calcPrecio()"></div>
+        <div><label>Sueldo deseado (USD)</label><input type="number" id="pr_sueldo" oninput="calcPrecio()"></div>
+      </div>
+      <div class="row2">
+        <div><label>% de impuestos</label><input type="number" id="pr_impuestos_pct" value="18" oninput="calcPrecio()"><p class="hint">Referencial: 18% es un valor común en varios países de LatAm. Ajústalo según los impuestos de tu negocio.</p></div>
+        <div><label>Margen deseado (USD)</label><input type="number" id="pr_margen" oninput="calcPrecio()"></div>
+      </div>
+      <div class="row2">
+        <div><label>Reinversión (USD)</label><input type="number" id="pr_reinversion" oninput="calcPrecio()"></div>
+        <div><label>N° de clientes objetivo</label><input type="number" id="pr_clientes" oninput="calcPrecio()"></div>
+      </div>
+      <div class="priority-box" style="margin-top:16px;">
+        Subtotal (costos + sueldo + margen + reinversión): <b id="pr_subtotal">$ 0</b><br>
+        Impuestos calculados: <b id="pr_impuestos_monto">$ 0</b><br>
+        Facturación necesaria: <b id="pr_facturacion">$ 0</b><br>
+        Ticket promedio necesario: <b id="pr_ticket">$ 0</b>
+        <div id="pr_gap" style="margin-top:8px; font-weight:700;"></div>
+      </div>
+    </div>
+    <div class="card"><h3>Valor percibido</h3>
+      <p class="hint">El valor percibido se construye con 5 piezas: el problema, el resultado que das, tu evidencia, la confianza que generas y qué te diferencia. Mientras más claras estén, menos importa "competir por precio".</p>
+      <label>¿Qué problema resuelves?</label><input type="text" id="pr_vp_problema">
+      <label>¿Qué resultado obtiene?</label><input type="text" id="pr_vp_resultado">
+      <label>¿Qué evidencia tienes?</label><input type="text" id="pr_vp_evidencia" placeholder="Ej: testimonios, casos de éxito, años de experiencia">
+      <label>¿Por qué deberían confiar en ti?</label><input type="text" id="pr_vp_confianza">
+      <label>¿Qué hace diferente tu solución?</label><input type="text" id="pr_vp_diferenciacion">
+    </div>
+    <div class="card"><h3>Checklist Precio</h3><div id="pr_checklist"></div></div>
+    <div class="card"><h3>Tu nota en Precio</h3>
+      <p class="hint">Se calcula sola según tu checklist de arriba.</p>
+      <div class="result-total" style="padding:8px 0;"><div class="num" id="pr_nota_val" style="font-size:40px;">0</div><div class="of40" style="font-size:13px;">de 10</div></div>
+      <input type="hidden" id="pr_nota" value="0">
+    </div>
+    <div class="btns"><button class="btn-secondary" onclick="goTo(2)">Atrás</button><button class="btn-primary" onclick="goTo(4)">Continuar</button></div>
+  </div>
+
+  <!-- 4: PLAZA -->
+  <div class="screen" data-screen="4">
+    <div class="eyebrow">P 3 de 4</div>
+    <h2>Plaza</h2>
+    <p class="sub">Si no pueden encontrarte, para ellos no existes.</p>
+    <div class="card"><h3>¿Dónde está tu cliente?</h3>
+      <table class="channels"><thead><tr><th>Canal</th><th>Cliente está ahí</th><th>Estoy presente</th></tr></thead>
+      <tbody id="pl_channels"></tbody></table>
+    </div>
+    <div class="card"><h3>Recorrido del cliente</h3>
+      <p class="hint">Describe en qué canal o momento concreto ocurre cada paso hoy. Si no ocurre todavía, escribe "no existe" — eso también es información valiosa.</p>
+      <label>Descubre</label><input type="text" id="pl_descubre" placeholder="Ej: me descubre en Instagram por recomendación">
+      <label>Investiga</label><input type="text" id="pl_investiga" placeholder="Ej: revisa mi perfil y mis reseñas">
+      <label>Confía</label><input type="text" id="pl_confia" placeholder="Ej: ve testimonios o casos anteriores">
+      <label>Contacta</label><input type="text" id="pl_contacta" placeholder="Ej: me escribe por WhatsApp">
+      <label>Compra</label><input type="text" id="pl_compra" placeholder="Ej: coordina y paga por transferencia">
+      <label>Recibe</label><input type="text" id="pl_recibe">
+      <label>Recomienda</label><input type="text" id="pl_recomienda">
+    </div>
+    <div class="card"><h3>Checklist Plaza</h3><div id="pl_checklist"></div></div>
+    <div class="card"><h3>Tu nota en Plaza</h3>
+      <p class="hint">Se calcula sola según tu checklist de arriba.</p>
+      <div class="result-total" style="padding:8px 0;"><div class="num" id="pl_nota_val" style="font-size:40px;">0</div><div class="of40" style="font-size:13px;">de 10</div></div>
+      <input type="hidden" id="pl_nota" value="0">
+    </div>
+    <div class="btns"><button class="btn-secondary" onclick="goTo(3)">Atrás</button><button class="btn-primary" onclick="goTo(5)">Continuar</button></div>
+  </div>
+
+  <!-- 5: PROMOCION -->
+  <div class="screen" data-screen="5">
+    <div class="eyebrow">P 4 de 4</div>
+    <h2>Promoción</h2>
+    <p class="sub">No necesitas publicar más. Necesitas comunicar mejor.</p>
+    <div class="card"><h3>Tu mensaje</h3>
+      <p class="hint">Ejemplo completo: "Ayudo a pequeños negocios que dependen de redes sociales a convertir su presencia digital en un sistema que genere clientes."</p>
+      <label>Ayudo a (tipo de cliente)</label><input type="text" id="pm_cliente" placeholder="Ej: pequeños negocios que dependen de redes sociales">
+      <label>a conseguir (resultado)</label><input type="text" id="pm_resultado" placeholder="Ej: clientes constantes">
+      <label>mediante (solución/diferenciador)</label><input type="text" id="pm_solucion" placeholder="Ej: un sistema de contenido y marca">
+    </div>
+    <div class="card"><h3>4 tipos de contenido</h3>
+      <p class="hint">Educación = enseña algo · Autoridad = demuestra que sabes hacerlo · Conexión (historias) = muestra quién eres · Conversión (ofertas) = invita al siguiente paso. Escribe una idea por línea.</p>
+      <label>3 problemas que puedes enseñar (uno por línea)</label><textarea id="pm_ensenar" placeholder="Ej: por qué publicar más no siempre trae más clientes"></textarea>
+      <label>3 pruebas de autoridad que tienes</label><textarea id="pm_autoridad" placeholder="Ej: 15 años de experiencia, casos de clientes reales"></textarea>
+      <label>3 historias que puedes contar</label><textarea id="pm_historias" placeholder="Ej: cómo empezaste, un error que aprendiste"></textarea>
+      <label>3 ofertas que puedes comunicar</label><textarea id="pm_ofertas" placeholder="Ej: sesión de diagnóstico, paquete inicial"></textarea>
+    </div>
+    <div class="card"><h3>Plantilla de mensaje central</h3>
+      <p class="hint">Esta plantilla te sirve para armar un post, un guion o el copy de tu web. Complétala en orden, como una historia corta.</p>
+      <label>Problema — "Si estás haciendo ___, probablemente estás perdiendo ___"</label><input type="text" id="pm_problema" placeholder="Ej: Si solo publicas sin estrategia, estás perdiendo clientes">
+      <label>Consecuencia — "El problema es que ___"</label><input type="text" id="pm_consecuencia">
+      <label>Nueva perspectiva — "Lo que realmente necesitas es ___"</label><input type="text" id="pm_perspectiva">
+      <label>Solución — "Por eso desarrollé ___"</label><input type="text" id="pm_solucion2">
+      <label>CTA — "Si quieres ___, haz ___"</label><input type="text" id="pm_cta" placeholder="Ej: Si quieres ordenar tu marca, agenda una sesión">
+    </div>
+    <div class="card"><h3>Checklist Promoción</h3><div id="pm_checklist"></div></div>
+    <div class="card"><h3>Tu nota en Promoción</h3>
+      <p class="hint">Se calcula sola según tu checklist de arriba.</p>
+      <div class="result-total" style="padding:8px 0;"><div class="num" id="pm_nota_val" style="font-size:40px;">0</div><div class="of40" style="font-size:13px;">de 10</div></div>
+      <input type="hidden" id="pm_nota" value="0">
+    </div>
+    <div class="btns"><button class="btn-secondary" onclick="goTo(4)">Atrás</button><button class="btn-primary" onclick="showResults()">Ver mi diagnóstico</button></div>
+  </div>
+
+  <!-- 6: RESULTADOS -->
+  <div class="screen" data-screen="6">
+    <div class="eyebrow">Tu diagnóstico</div>
+    <h2>Tu matriz 4P</h2>
+    <div class="result-total">
+      <div class="num" id="res_total">0</div>
+      <div class="of40">de 40 puntos</div>
+      <div class="tag" id="res_tag">—</div>
+    </div>
+    <div class="bars" id="res_bars"></div>
+    <div class="priority-box" id="res_priority_box">
+      <span id="res_priority_text">—</span>
+    </div>
+    <div class="btns" style="margin-top:22px;"><button class="btn-secondary" onclick="goTo(5)">Atrás</button><button class="btn-primary" onclick="goTo(7)">Construir mi plan de 30 días</button></div>
+  </div>
+
+  <!-- 7: PLAN 30 DIAS -->
+  <div class="screen" data-screen="7">
+    <div class="eyebrow">Último paso</div>
+    <h2>Tu plan de 30 días</h2>
+    <label>Mi mayor problema actualmente es</label><input type="text" id="pl30_problema">
+    <label>La P que debo trabajar primero</label>
+    <select id="pl30_p"><option>Producto</option><option>Precio</option><option>Plaza</option><option>Promoción</option></select>
+    <label>La acción principal será</label><input type="text" id="pl30_accion">
+    <label>Indicador que voy a medir</label><input type="text" id="pl30_indicador">
+    <label>Meta a 30 días</label><input type="text" id="pl30_meta">
+    <label>Fecha de revisión</label><input type="text" id="pl30_fecha" placeholder="dd/mm/aaaa">
+    <div class="btns"><button class="btn-secondary" onclick="goTo(6)">Atrás</button><button class="btn-primary" onclick="goTo(8)">Finalizar diagnóstico</button></div>
+  </div>
+
+  <!-- 8: ENTREGA -->
+  <div class="screen" data-screen="8">
+    <div class="eyebrow">Listo</div>
+    <h2>Tu diagnóstico está completo</h2>
+    <p class="sub">Descarga tu plan personalizado en PDF y, si quieres ir más rápido, agenda tu Sesión Power 3 con Caleb.</p>
+    <div class="final-actions">
+      <button class="btn-yellow" onclick="downloadPDF()">Descargar mi plan en PDF</button>
+      <a href="https://calendar.app.google/hR8SAyBPVnHdXxW16" target="_blank" style="text-decoration:none;">
+        <button class="btn-outline-cta">Agendar mi Sesión Power 3</button>
+      </a>
+    </div>
+    <div class="footer-note">Hecho por Caleb De La Piedra — <b>POWER 3</b></div>
+  </div>
+
+</div>
+
+<script>
+const TOTAL_SCREENS = 9;
+const CHECKLISTS = {
+  p_checklist: ["Resuelvo un problema real","Mi cliente entiende qué vendo","El resultado está claro","Tengo un cliente específico","Tengo una propuesta diferenciadora","Sé por qué un cliente debería comprarme a mí"],
+  pr_checklist: ["Sé cuánto necesito facturar","Mi precio tiene una lógica","No compito únicamente por precio","Comunico el valor antes del precio","Tengo niveles/ofertas cuando corresponde","Mi margen hace el negocio sostenible"],
+  pl_checklist: ["Sé dónde está mi cliente","Estoy en los canales adecuados","Es fácil encontrarme","Es fácil contactarme y comprarme","Tengo un proceso de atención","Mi experiencia post-compra está diseñada"],
+  pm_checklist: ["Sé exactamente a quién hablo","Tengo un mensaje central","Comunico problemas reales","Demuestro autoridad","Tengo contenido de conversión y una CTA clara","Tengo un sistema para captar oportunidades"]
+};
+const CHANNELS = ["Instagram","TikTok","Google","WhatsApp","Web","LinkedIn","Offline"];
+
+const COUNTRIES = [
+["PE","+51","Perú"],["AR","+54","Argentina"],["BO","+591","Bolivia"],["BR","+55","Brasil"],
+["CL","+56","Chile"],["CO","+57","Colombia"],["CR","+506","Costa Rica"],["CU","+53","Cuba"],
+["EC","+593","Ecuador"],["SV","+503","El Salvador"],["ES","+34","España"],["US","+1","Estados Unidos"],
+["GT","+502","Guatemala"],["HN","+504","Honduras"],["MX","+52","México"],["NI","+505","Nicaragua"],
+["PA","+507","Panamá"],["PY","+595","Paraguay"],["PR","+1787","Puerto Rico"],["DO","+1809","República Dominicana"],
+["UY","+598","Uruguay"],["VE","+58","Venezuela"],
+["AF","+93","Afganistán"],["AL","+355","Albania"],["DE","+49","Alemania"],["AD","+376","Andorra"],
+["AO","+244","Angola"],["AG","+1268","Antigua y Barbuda"],["SA","+966","Arabia Saudita"],["DZ","+213","Argelia"],
+["AM","+374","Armenia"],["AU","+61","Australia"],["AT","+43","Austria"],["AZ","+994","Azerbaiyán"],
+["BS","+1242","Bahamas"],["BD","+880","Bangladés"],["BB","+1246","Barbados"],["BH","+973","Baréin"],
+["BE","+32","Bélgica"],["BZ","+501","Belice"],["BJ","+229","Benín"],["BY","+375","Bielorrusia"],
+["BA","+387","Bosnia y Herzegovina"],["BW","+267","Botsuana"],["BN","+673","Brunéi"],["BG","+359","Bulgaria"],
+["BF","+226","Burkina Faso"],["BI","+257","Burundi"],["BT","+975","Bután"],["CV","+238","Cabo Verde"],
+["KH","+855","Camboya"],["CM","+237","Camerún"],["CA","+1","Canadá"],["QA","+974","Catar"],
+["KZ","+7","Kazajistán"],["TD","+235","Chad"],["CN","+86","China"],["CY","+357","Chipre"],
+["KM","+269","Comoras"],["KP","+850","Corea del Norte"],["KR","+82","Corea del Sur"],["CI","+225","Costa de Marfil"],
+["HR","+385","Croacia"],["DK","+45","Dinamarca"],["DM","+1767","Dominica"],["EG","+20","Egipto"],
+["AE","+971","Emiratos Árabes Unidos"],["ER","+291","Eritrea"],["SK","+421","Eslovaquia"],["SI","+386","Eslovenia"],
+["EE","+372","Estonia"],["ET","+251","Etiopía"],["PH","+63","Filipinas"],["FI","+358","Finlandia"],
+["FJ","+679","Fiyi"],["FR","+33","Francia"],["GA","+241","Gabón"],["GM","+220","Gambia"],
+["GE","+995","Georgia"],["GH","+233","Ghana"],["GD","+1473","Granada"],["GR","+30","Grecia"],
+["GN","+224","Guinea"],["GQ","+240","Guinea Ecuatorial"],["GW","+245","Guinea-Bisáu"],["GY","+592","Guyana"],
+["HT","+509","Haití"],["HK","+852","Hong Kong"],["HU","+36","Hungría"],["IN","+91","India"],
+["ID","+62","Indonesia"],["IQ","+964","Irak"],["IR","+98","Irán"],["IE","+353","Irlanda"],
+["IS","+354","Islandia"],["IL","+972","Israel"],["IT","+39","Italia"],["JM","+1876","Jamaica"],
+["JP","+81","Japón"],["JO","+962","Jordania"],["KE","+254","Kenia"],["KG","+996","Kirguistán"],
+["KI","+686","Kiribati"],["KW","+965","Kuwait"],["LA","+856","Laos"],["LS","+266","Lesoto"],
+["LV","+371","Letonia"],["LB","+961","Líbano"],["LR","+231","Liberia"],["LY","+218","Libia"],
+["LI","+423","Liechtenstein"],["LT","+370","Lituania"],["LU","+352","Luxemburgo"],["MO","+853","Macao"],
+["MK","+389","Macedonia del Norte"],["MG","+261","Madagascar"],["MY","+60","Malasia"],["MW","+265","Malaui"],
+["MV","+960","Maldivas"],["ML","+223","Malí"],["MT","+356","Malta"],["MA","+212","Marruecos"],
+["MU","+230","Mauricio"],["MR","+222","Mauritania"],["FM","+691","Micronesia"],["MD","+373","Moldavia"],
+["MC","+377","Mónaco"],["MN","+976","Mongolia"],["ME","+382","Montenegro"],["MZ","+258","Mozambique"],
+["MM","+95","Myanmar"],["NA","+264","Namibia"],["NR","+674","Nauru"],["NP","+977","Nepal"],
+["NE","+227","Níger"],["NG","+234","Nigeria"],["NO","+47","Noruega"],["NZ","+64","Nueva Zelanda"],
+["OM","+968","Omán"],["NL","+31","Países Bajos"],["PK","+92","Pakistán"],["PW","+680","Palaos"],
+["PG","+675","Papúa Nueva Guinea"],["PL","+48","Polonia"],["PT","+351","Portugal"],["GB","+44","Reino Unido"],
+["CF","+236","República Centroafricana"],["CZ","+420","República Checa"],["CD","+243","Rep. Dem. del Congo"],
+["CG","+242","República del Congo"],["RW","+250","Ruanda"],["RO","+40","Rumania"],["RU","+7","Rusia"],
+["WS","+685","Samoa"],["KN","+1869","San Cristóbal y Nieves"],["SM","+378","San Marino"],
+["VC","+1784","San Vicente y las Granadinas"],["LC","+1758","Santa Lucía"],["ST","+239","Santo Tomé y Príncipe"],
+["SN","+221","Senegal"],["RS","+381","Serbia"],["SC","+248","Seychelles"],["SL","+232","Sierra Leona"],
+["SG","+65","Singapur"],["SY","+963","Siria"],["SO","+252","Somalia"],["LK","+94","Sri Lanka"],
+["SZ","+268","Suazilandia"],["ZA","+27","Sudáfrica"],["SD","+249","Sudán"],["SS","+211","Sudán del Sur"],
+["SE","+46","Suecia"],["CH","+41","Suiza"],["SR","+597","Surinam"],["TH","+66","Tailandia"],
+["TW","+886","Taiwán"],["TZ","+255","Tanzania"],["TJ","+992","Tayikistán"],["TL","+670","Timor Oriental"],
+["TG","+228","Togo"],["TO","+676","Tonga"],["TT","+1868","Trinidad y Tobago"],["TN","+216","Túnez"],
+["TM","+993","Turkmenistán"],["TR","+90","Turquía"],["TV","+688","Tuvalu"],["UA","+380","Ucrania"],
+["UG","+256","Uganda"],["UZ","+998","Uzbekistán"],["VU","+678","Vanuatu"],["VA","+379","Vaticano"],
+["VN","+84","Vietnam"],["YE","+967","Yemen"],["DJ","+253","Yibuti"],["ZM","+260","Zambia"],["ZW","+263","Zimbabue"]
+];
+function flagEmoji(iso2){
+  return iso2.toUpperCase().replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt(0)));
+}
+function renderCountries(){
+  const sel = document.getElementById("c_pais");
+  const sorted = [...COUNTRIES].sort((a,b)=>a[2].localeCompare(b[2],"es"));
+  sel.innerHTML = sorted.map(([iso,dial,name])=>`<option value="${dial}">${flagEmoji(iso)} ${name} (${dial})</option>`).join("");
+  const peruIdx = sorted.findIndex(c=>c[0]==="PE");
+  if(peruIdx>=0) sel.selectedIndex = peruIdx;
+}
+
+function renderChecklists(){
+  for(const id in CHECKLISTS){
+    const el = document.getElementById(id);
+    el.innerHTML = CHECKLISTS[id].map((txt,i)=>`<label class="check-item"><input type="checkbox" data-group="${id}" data-idx="${i}" onchange="updateNota('${id}')">${txt}</label>`).join("");
+    updateNota(id);
+  }
+}
+const NOTA_MAP = { p_checklist:"p_nota", pr_checklist:"pr_nota", pl_checklist:"pl_nota", pm_checklist:"pm_nota" };
+function updateNota(group){
+  const checked = document.querySelectorAll(`[data-group="${group}"]:checked`).length;
+  const nota = Math.max(1, Math.round((checked/6)*10));
+  const notaId = NOTA_MAP[group];
+  document.getElementById(notaId).value = nota;
+  document.getElementById(notaId+"_val").textContent = nota;
+}
+function renderChannels(){
+  const tbody = document.getElementById("pl_channels");
+  tbody.innerHTML = CHANNELS.map(c=>`
+    <tr>
+      <td>${c}</td>
+      <td><input type="checkbox" id="ch_${c}_cliente"></td>
+      <td><input type="checkbox" id="ch_${c}_presente"></td>
+    </tr>`).join("");
+}
+renderChecklists();
+renderChannels();
+renderCountries();
+
+function goTo(n){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.querySelector(`.screen[data-screen="${n}"]`).classList.add("active");
+  window.scrollTo(0,0);
+  renderProgress(n);
+}
+function renderProgress(n){
+  const bar = document.getElementById("progressBar");
+  bar.innerHTML = "";
+  const steps = TOTAL_SCREENS;
+  for(let i=0;i<steps;i++){
+    const span = document.createElement("span");
+    const i2 = document.createElement("i");
+    i2.style.width = i<=n ? "100%":"0%";
+    span.appendChild(i2);
+    bar.appendChild(span);
+  }
+}
+renderProgress(0);
+
+function syncSlider(id){
+  document.getElementById(id+"_val").textContent = document.getElementById(id).value;
+}
+
+function calcPrecio(){
+  const v = id => parseFloat(document.getElementById(id).value)||0;
+  const subtotal = v("pr_costos")+v("pr_sueldo")+v("pr_margen")+v("pr_reinversion");
+  const impPct = v("pr_impuestos_pct");
+  const impuestosMonto = subtotal * (impPct/100);
+  const facturacion = subtotal + impuestosMonto;
+  const clientes = v("pr_clientes");
+  const ticket = clientes>0 ? facturacion/clientes : 0;
+  const fmt = n => "$"+n.toLocaleString("en-US",{maximumFractionDigits:0});
+  document.getElementById("pr_subtotal").textContent = fmt(subtotal);
+  document.getElementById("pr_impuestos_monto").textContent = fmt(impuestosMonto);
+  document.getElementById("pr_facturacion").textContent = fmt(facturacion);
+  document.getElementById("pr_ticket").textContent = fmt(ticket);
+  const actual = parseFloat(document.getElementById("c_facturacion").value)||0;
+  const gapEl = document.getElementById("pr_gap");
+  if(actual>0 && facturacion>0){
+    const diff = facturacion - actual;
+    if(diff>0){ gapEl.style.color="#e5231b"; gapEl.textContent = `Hoy facturas ${fmt(actual)}. Te faltan ${fmt(diff)}/mes para llegar a lo que tu negocio realmente necesita.`; }
+    else{ gapEl.style.color="#2ecc71"; gapEl.textContent = `Hoy facturas ${fmt(actual)}, por encima de tu mínimo necesario. Buena base para reinvertir y escalar.`; }
+  } else { gapEl.textContent = ""; }
+}
+
+function getState(){
+  const v = id => document.getElementById(id).value;
+  const nota = id => parseInt(document.getElementById(id).value);
+  const check = group => CHECKLISTS[group].map((txt,i)=>({txt, done: document.querySelector(`[data-group="${group}"][data-idx="${i}"]`).checked}));
+  const channels = CHANNELS.map(c=>({
+    nombre:c,
+    clienteAhi: document.getElementById(`ch_${c}_cliente`).checked,
+    presente: document.getElementById(`ch_${c}_presente`).checked
+  }));
+  return {
+    contacto:{ nombre:v("c_nombre"), negocio:v("c_negocio"), email:v("c_email"),
+      whatsapp: document.getElementById("c_pais").value+" "+v("c_whatsapp"),
+      facturacionActual: parseFloat(v("c_facturacion"))||0 },
+    producto:{
+      vendo:v("p_vendo"), ayudo:v("p_ayudo"), problema:v("p_problema"), resultado:v("p_resultado"),
+      funcional:v("p_funcional"), emocional:v("p_emocional"), economico:v("p_economico"), social:v("p_social"),
+      antes:v("p_antes"), despues:v("p_despues"),
+      competidores:[v("p_comp1"),v("p_comp2"),v("p_comp3")], igual:v("p_igual"), diferente:v("p_diferente"),
+      checklist: check("p_checklist"), nota: nota("p_nota")
+    },
+    precio:{
+      modelo:v("pr_modelo"), costos:v("pr_costos"), sueldo:v("pr_sueldo"), impuestosPct:v("pr_impuestos_pct"),
+      margen:v("pr_margen"), reinversion:v("pr_reinversion"), clientes:v("pr_clientes"),
+      subtotal: document.getElementById("pr_subtotal").textContent,
+      impuestosMonto: document.getElementById("pr_impuestos_monto").textContent,
+      facturacion: document.getElementById("pr_facturacion").textContent,
+      ticket: document.getElementById("pr_ticket").textContent,
+      vp:{ problema:v("pr_vp_problema"), resultado:v("pr_vp_resultado"), evidencia:v("pr_vp_evidencia"), confianza:v("pr_vp_confianza"), diferenciacion:v("pr_vp_diferenciacion") },
+      checklist: check("pr_checklist"), nota: nota("pr_nota")
+    },
+    plaza:{
+      canales: channels,
+      recorrido:{ descubre:v("pl_descubre"), investiga:v("pl_investiga"), confia:v("pl_confia"), contacta:v("pl_contacta"), compra:v("pl_compra"), recibe:v("pl_recibe"), recomienda:v("pl_recomienda") },
+      checklist: check("pl_checklist"), nota: nota("pl_nota")
+    },
+    promocion:{
+      mensaje: `Ayudo a ${v("pm_cliente")||"___"} a conseguir ${v("pm_resultado")||"___"} mediante ${v("pm_solucion")||"___"}.`,
+      ensenar:v("pm_ensenar"), autoridad:v("pm_autoridad"), historias:v("pm_historias"), ofertas:v("pm_ofertas"),
+      plantilla:{ problema:v("pm_problema"), consecuencia:v("pm_consecuencia"), perspectiva:v("pm_perspectiva"), solucion:v("pm_solucion2"), cta:v("pm_cta") },
+      checklist: check("pm_checklist"), nota: nota("pm_nota")
+    },
+    plan30:{ problema:v("pl30_problema"), p:v("pl30_p"), accion:v("pl30_accion"), indicador:v("pl30_indicador"), meta:v("pl30_meta"), fecha:v("pl30_fecha") }
+  };
+}
+
+function interpretar(total){
+  if(total>=32) return {tag:"Alineado", color:"#2ecc71", texto:"Tu estructura es sólida. El siguiente paso es optimizar y escalar."};
+  if(total>=24) return {tag:"Desalineación moderada", color:"#f2b705", texto:"Tienes bases interesantes, pero existen fugas que pueden limitar tu crecimiento."};
+  if(total>=16) return {tag:"Negocio vulnerable", color:"#e5731b", texto:"Antes de invertir más en publicidad, necesitas corregir fundamentos."};
+  return {tag:"Estás improvisando", color:"#e5231b", texto:"El problema probablemente no sea la falta de clientes. Es la estructura del negocio."};
+}
+
+// Determina la(s) P prioritaria(s) a partir de las notas.
+// - Si el negocio está "Alineado" (>=32) y no hay una P claramente rezagada, no hay prioridad forzada.
+// - Si hay empate en el mínimo, se listan todas las P's empatadas (nunca se inventa una sola al azar).
+function calcularPrioridad(notas, interp){
+  const entries = Object.entries(notas);
+  const minVal = Math.min(...entries.map(([,v])=>v));
+  const maxVal = Math.max(...entries.map(([,v])=>v));
+  const empatadas = entries.filter(([,v])=>v===minVal).map(([k])=>k);
+  const todasIguales = minVal===maxVal;
+
+  if(interp.tag==="Alineado" && (todasIguales || (maxVal-minVal)<=1)){
+    return {
+      hayPrioridad:false,
+      lista:[],
+      texto:"Tus 4 áreas están parejas y en buen nivel. No hay una P claramente frenando a las demás — toca mantener el estándar y buscar optimizar."
+    };
+  }
+
+  const listaTexto = empatadas.length>1
+    ? `${empatadas.slice(0,-1).join(", ")} y ${empatadas[empatadas.length-1]}`
+    : empatadas[0];
+  const verbo = empatadas.length>1 ? "están frenando" : "está frenando";
+
+  return {
+    hayPrioridad:true,
+    lista:empatadas,
+    texto:`Tu prioridad ahora mismo es trabajar en ${listaTexto}. ${empatadas.length>1?"Son las P's que":"Es la P que"} ${verbo} a las demás.`
+  };
+}
+
+function showResults(){
+  const st = getState();
+  const notas = { Producto: st.producto.nota, Precio: st.precio.nota, Plaza: st.plaza.nota, Promoción: st.promocion.nota };
+  const total = Object.values(notas).reduce((a,b)=>a+b,0);
+  const interp = interpretar(total);
+  document.getElementById("res_total").textContent = total;
+  const tagEl = document.getElementById("res_tag");
+  tagEl.textContent = interp.tag;
+  tagEl.style.background = interp.color+"22";
+  tagEl.style.color = interp.color;
+  tagEl.style.border = "1px solid "+interp.color;
+
+  const barsEl = document.getElementById("res_bars");
+  const colors = {Producto:"#e5231b", Precio:"#f2b705", Plaza:"#f2f0ec", Promoción:"#8f8c86"};
+  barsEl.innerHTML = Object.entries(notas).map(([k,val])=>`
+    <div class="bar-col">
+      <div class="bar-fill" style="height:${val*10}%; background:${colors[k]};"></div>
+      <div class="bar-label">${k}</div>
+      <div class="bar-score" style="color:${colors[k]}">${val}/10</div>
+    </div>`).join("");
+
+  const prioridadInfo = calcularPrioridad(notas, interp);
+  document.getElementById("res_priority_text").textContent = prioridadInfo.texto;
+  const primaryP = prioridadInfo.hayPrioridad ? prioridadInfo.lista[0] : Object.entries(notas).sort((a,b)=>a[1]-b[1])[0][0];
+  document.getElementById("pl30_p").value = primaryP;
+
+  window._state = st;
+  window._diagnostico = { total, interp, notas, prioridad: primaryP, prioridadInfo };
+  goTo(6);
+}
+
+async function downloadPDF(){
+  const st = getState();
+  st.plan30.p = document.getElementById("pl30_p").value;
+  const diag = window._diagnostico || (function(){
+    const notas = { Producto: st.producto.nota, Precio: st.precio.nota, Plaza: st.plaza.nota, Promoción: st.promocion.nota };
+    const total = Object.values(notas).reduce((a,b)=>a+b,0);
+    const interp = interpretar(total);
+    const prioridadInfo = calcularPrioridad(notas, interp);
+    const prioridad = prioridadInfo.hayPrioridad ? prioridadInfo.lista[0] : Object.entries(notas).sort((a,b)=>a[1]-b[1])[0][0];
+    return { total, interp, notas, prioridad, prioridadInfo };
+  })();
+
+  const dlBtn = document.querySelector(".btn-yellow");
+  const originalLabel = dlBtn.textContent;
+  dlBtn.textContent = "Generando tu PDF...";
+  dlBtn.disabled = true;
+
+  // Try to fetch the real cover image; fall back to a code-drawn cover if it fails.
+  let coverDataUrl = null;
+  try{
+    const resp = await fetch("https://raw.githubusercontent.com/calebdelapiedra/4p/main/3a969ff1-2f02-494f-a3d0-7dd00d2fd5a8.jpeg");
+    const blob = await resp.blob();
+    coverDataUrl = await new Promise((resolve,reject)=>{
+      const r = new FileReader();
+      r.onload = ()=>resolve(r.result);
+      r.onerror = reject;
+      r.readAsDataURL(blob);
+    });
+  }catch(e){ coverDataUrl = null; }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:"pt", format:"a4" });
+  const W = 595, H = 842;
+  const RED="#e5231b", WHITE="#f2f0ec", YELLOW="#f2b705", BLACK="#0a0a0a", CARD="#131313", GRAY="#8f8c86", GREEN="#2ecc71";
+
+  function pageBg(){ doc.setFillColor(BLACK); doc.rect(0,0,W,H,"F"); }
+  function sectionHeader(text,y){
+    doc.setFillColor(RED); doc.rect(50, y-14, 4, 18, "F");
+    doc.setTextColor(WHITE); doc.setFont("helvetica","bold"); doc.setFontSize(17);
+    doc.text(text, 62, y);
+  }
+  // Evita que una tarjeta quede cortada o se mezcle con la siguiente: si no
+  // cabe en lo que queda de la página, abre una página nueva y reinicia y.
+  const BOTTOM_MARGIN = 780;
+  function ensureSpace(y, neededHeight){
+    if(y + neededHeight > BOTTOM_MARGIN){
+      doc.addPage(); pageBg();
+      return 60;
+    }
+    return y;
+  }
+  function pageTitle(eyebrow, text, y){
+    doc.setTextColor(YELLOW); doc.setFont("helvetica","bold"); doc.setFontSize(9);
+    doc.text(eyebrow.toUpperCase(), 50, y-16);
+    doc.setTextColor(WHITE); doc.setFontSize(20);
+    doc.text(text, 50, y);
+    doc.setDrawColor(RED); doc.setLineWidth(2); doc.line(50, y+8, 90, y+8);
+  }
+  function body(text,x,y,maxW,color){
+    doc.setFont("helvetica","normal"); doc.setFontSize(10.5); doc.setTextColor(color||GRAY);
+    const lines = doc.splitTextToSize(text, maxW||495);
+    doc.text(lines, x, y);
+    return y + lines.length*13;
+  }
+  function label(text,x,y,color){ doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(color||YELLOW); doc.text(text,x,y); }
+  function card(x,y,w,h){ doc.setFillColor(CARD); doc.setDrawColor("#2a2a2a"); doc.roundedRect(x,y,w,h,8,8,"FD"); }
+  function kpiCard(x,y,w,h,title,value,color){
+    card(x,y,w,h);
+    doc.setFillColor(color); doc.rect(x, y, 4, h, "F");
+    doc.setTextColor(GRAY); doc.setFont("helvetica","bold"); doc.setFontSize(9);
+    doc.text(title.toUpperCase(), x+16, y+20, {maxWidth:w-24});
+    doc.setTextColor(color); doc.setFont("helvetica","bold"); doc.setFontSize(22);
+    doc.text(value, x+16, y+h-14);
+  }
+
+  const PCOLORS = {Producto:RED, Precio:YELLOW, Plaza:"#5ab8ff", "Promoción":"#c78bff"};
+
+  // PAGE 1 — COVER (imagen real si carga, si no un fallback con la misma identidad)
+  if(coverDataUrl){
+    pageBg();
+    try{ doc.addImage(coverDataUrl, "JPEG", 0, 0, W, H, undefined, "FAST"); }catch(e){}
+  } else {
+    pageBg();
+    doc.setFillColor(RED); for(let i=0;i<5;i++) for(let j=0;j<4;j++) doc.circle(40+i*10, 90+j*10, 0.8, "F");
+    doc.setFillColor(YELLOW); for(let i=0;i<5;i++) for(let j=0;j<4;j++) doc.circle(80+i*9, 700+j*9, 0.8, "F");
+    doc.setDrawColor(RED); doc.setLineWidth(0.6); doc.line(297,470,120,760);
+    doc.setDrawColor(WHITE); doc.setLineWidth(0.5); doc.line(297,470,297,780);
+    doc.setDrawColor(GRAY); doc.setLineWidth(0.5); doc.line(297,470,470,760);
+    doc.setFont("helvetica","bold"); doc.setFontSize(110);
+    doc.setTextColor(RED); doc.text("4", 150, 430);
+    doc.setTextColor(WHITE); doc.text("P", 300, 430);
+    doc.setFontSize(15); doc.setFont("helvetica","bold");
+    doc.setTextColor(WHITE); doc.text("ALINEA TU", 130, 470);
+    doc.setTextColor(RED); doc.text("NEGOCIO", 218, 470);
+    doc.setTextColor(WHITE); doc.text("Y", 300, 470);
+    doc.setTextColor(YELLOW); doc.text("CRECE", 320, 470);
+    doc.setFontSize(10); doc.setFont("helvetica","normal");
+    doc.setTextColor(WHITE); doc.text("Hecho por Caleb De La Piedra - ", 155, 800);
+    doc.setTextColor(RED); doc.setFont("helvetica","bold"); doc.text("POWER 3", 155+doc.getTextWidth("Hecho por Caleb De La Piedra - "), 800);
+  }
+  // etiqueta discreta con el nombre del usuario, en la esquina inferior
+  doc.setFillColor(BLACK); doc.roundedRect(0, H-26, W, 26, 0, 0, "F");
+  doc.setFontSize(9); doc.setTextColor(GRAY); doc.setFont("helvetica","normal");
+  doc.text(`Diagnóstico personalizado de ${st.contacto.nombre||"tu negocio"} · ${new Date().toLocaleDateString("es-PE")}`, 50, H-9);
+
+  // PAGE 2 — DASHBOARD DE DIAGNÓSTICO
+  doc.addPage(); pageBg();
+  pageTitle("Tu diagnóstico", "Dashboard 4P", 78);
+
+  // fila de 4 KPI cards
+  const kpiW = 118, kpiH = 78, gap = 8, startX = 50;
+  ["Producto","Precio","Plaza","Promoción"].forEach((k,i)=>{
+    kpiCard(startX + i*(kpiW+gap), 100, kpiW, kpiH, k, diag.notas[k]+"/10", PCOLORS[k]);
+  });
+
+  // score total + interpretación como tarjeta grande
+  card(50, 196, 495, 90);
+  doc.setTextColor(WHITE); doc.setFont("helvetica","bold"); doc.setFontSize(38);
+  doc.text(`${diag.total}`, 66, 250);
+  doc.setFontSize(13); doc.setTextColor(GRAY); doc.text("/ 40 puntos", 66+doc.getTextWidth(`${diag.total}`)+6, 250);
+  doc.setFillColor(diag.interp.color); doc.roundedRect(230, 214, 160, 24, 12, 12, "F");
+  doc.setTextColor(BLACK); doc.setFont("helvetica","bold"); doc.setFontSize(11);
+  doc.text(diag.interp.tag, 242, 230);
+  body(diag.interp.texto, 230, 254, 300, GRAY);
+
+  // barras horizontales por P
+  let y = 320;
+  sectionHeader("Detalle por P", y); y += 26;
+  ["Producto","Precio","Plaza","Promoción"].forEach(k=>{
+    const v2 = diag.notas[k];
+    doc.setTextColor(WHITE); doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.text(k, 50, y);
+    doc.setFillColor("#2a2a2a"); doc.roundedRect(150, y-9, 330, 9, 4, 4, "F");
+    doc.setFillColor(PCOLORS[k]); doc.roundedRect(150, y-9, (v2/10)*330, 9, 4, 4, "F");
+    doc.setTextColor(PCOLORS[k]); doc.setFont("helvetica","bold"); doc.text(v2+"/10", 490, y);
+    y += 26;
+  });
+
+  // caja de prioridad (o mensaje de "todo en orden" si el negocio está alineado)
+  y += 10;
+  const priorInfo = diag.prioridadInfo || {hayPrioridad:true, texto:`Trabaja primero en: ${diag.prioridad}`};
+  const priorLines = doc.splitTextToSize(priorInfo.texto, 463);
+  const priorBoxH = Math.max(60, 34 + priorLines.length*14);
+  doc.setFillColor("#1c1305"); doc.setDrawColor(YELLOW); doc.roundedRect(50, y, 495, priorBoxH, 8, 8, "FD");
+  label(priorInfo.hayPrioridad ? "TU PRIORIDAD AHORA" : "DIAGNÓSTICO GENERAL", 66, y+22);
+  doc.setTextColor(WHITE); doc.setFont("helvetica","normal"); doc.setFontSize(12);
+  doc.text(priorLines, 66, y+42);
+  y += priorBoxH - 60;
+
+  // comparación de facturación (si el usuario la indicó) — estilo métrica de dashboard
+  if(st.contacto.facturacionActual>0){
+    y += 78;
+    sectionHeader("Tu brecha de facturación", y); y += 20;
+    const actual = st.contacto.facturacionActual;
+    const necesaria = parseFloat((st.precio.facturacion||"0").replace(/[^\d.]/g,""))||0;
+    const half = 242;
+    kpiCard(50, y, half, 60, "Facturas hoy", "$"+actual.toLocaleString("en-US"), GRAY);
+    kpiCard(50+half+11, y, half, 60, "Necesitas facturar", st.precio.facturacion||"—", necesaria>actual? RED:GREEN);
+  }
+
+  // PAGE 3 — DETALLE POR P (estilo tarjetas)
+  doc.addPage(); pageBg();
+  pageTitle("Detalle", "Lo que respondiste en cada P", 78);
+  y = 105;
+  const detailBlocks = [
+    ["PRODUCTO", PCOLORS.Producto, `Vendo: ${st.producto.vendo||"—"}. Realmente ayudo a: ${st.producto.ayudo||"—"}. Problema: ${st.producto.problema||"—"}. Resultado buscado: ${st.producto.resultado||"—"}.`],
+    ["PRECIO", PCOLORS.Precio, `Modelo: ${st.precio.modelo||"—"}. Facturación necesaria: ${st.precio.facturacion||"—"}. Ticket promedio: ${st.precio.ticket||"—"}.`],
+    ["PLAZA", PCOLORS.Plaza, `Canales donde estás presente: ${st.plaza.canales.filter(c=>c.presente).map(c=>c.nombre).join(", ")||"ninguno indicado"}.`],
+    ["PROMOCIÓN", PCOLORS["Promoción"], st.promocion.mensaje]
+  ];
+  detailBlocks.forEach(([title,color,text])=>{
+    const lines = doc.splitTextToSize(text, 455);
+    const h = 42 + lines.length*14;
+    y = ensureSpace(y, h);
+    card(50,y,495,h);
+    doc.setFillColor(color); doc.rect(50,y,4,h,"F");
+    doc.setTextColor(color); doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.text(title, 64, y+20);
+    doc.setTextColor(GRAY); doc.setFont("helvetica","normal"); doc.setFontSize(10);
+    doc.text(lines, 64, y+38);
+    y += h + 14;
+  });
+
+  // PAGE 4 — REGLA CLAVE
+  doc.addPage(); pageBg();
+  pageTitle("Recuerda esto", "La regla más importante", 78);
+  doc.setFont("helvetica","bold"); doc.setFontSize(24); doc.setTextColor(RED);
+  doc.text("NO ESCALAS LO QUE", 50, 150);
+  doc.text("NO HAS ALINEADO.", 50, 182);
+  y = body("Si tus fundamentos no están alineados, meter más dinero en publicidad no arregla el negocio: solo hace que más personas lleguen a un negocio que todavía no está preparado.", 50, 220, 495, WHITE);
+  y += 30;
+  Object.entries(diag.notas).forEach(([k,v2])=>{
+    const ok = v2>=7;
+    card(50, y-20, 495, 34);
+    doc.setFont("helvetica","bold"); doc.setFontSize(12);
+    doc.setTextColor(ok?GREEN:RED);
+    doc.text(`${ok?"✔":"✘"}`, 64, y);
+    doc.setTextColor(WHITE); doc.text(k, 88, y);
+    doc.setTextColor(ok?GREEN:RED); doc.text(`${v2}/10`, 500, y);
+    y += 42;
+  });
+
+  // PAGE 5 — PLAN 7 DIAS
+  doc.addPage(); pageBg();
+  pageTitle("Ejecuta ya", "Plan de acción de 7 días", 78);
+  const plan7 = [
+    ["Día 1","Diagnóstico","Completa las 4 puntuaciones"],
+    ["Día 2","Producto","Define problema, cliente y resultado"],
+    ["Día 3","Precio","Calcula costos, facturación objetivo y ticket promedio"],
+    ["Día 4","Plaza","Identifica dónde está tu cliente y elimina canales innecesarios"],
+    ["Día 5","Promoción","Construye tu mensaje central"],
+    ["Día 6","Oferta","Convierte tu producto en una oferta clara"],
+    ["Día 7","Plan","Define las 3 acciones para los próximos 30 días"]
+  ];
+  y = 100;
+  plan7.forEach(([d,f,t])=>{
+    const lines = doc.splitTextToSize(t, 320);
+    const h = Math.max(38, lines.length*14+24);
+    y = ensureSpace(y, h);
+    card(50,y,495,h);
+    doc.setFillColor(YELLOW); doc.roundedRect(58, y+8, 34, h-16, 6, 6, "F");
+    doc.setTextColor(BLACK); doc.setFont("helvetica","bold"); doc.setFontSize(9);
+    doc.text(d.replace("Día ",""), 75, y+h/2+3, {align:"center"});
+    doc.setTextColor(WHITE); doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.text(f, 105, y+18);
+    doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.setTextColor(GRAY);
+    doc.text(lines, 105, y+34);
+    y += h + 12;
+  });
+
+  // PAGE 6 — PLAN 30 DIAS
+  doc.addPage(); pageBg();
+  pageTitle("Tu compromiso", "Plan de 30 días", 78);
+  y = 100;
+  const items = [
+    ["Mi mayor problema actualmente es", st.plan30.problema],
+    ["La P que debo trabajar primero", st.plan30.p],
+    ["Mi acción principal será", st.plan30.accion],
+    ["Indicador que voy a medir", st.plan30.indicador],
+    ["Meta a 30 días", st.plan30.meta],
+    ["Fecha de revisión", st.plan30.fecha]
+  ];
+  items.forEach(([k,v2])=>{
+    const lines = doc.splitTextToSize(v2||"—", 455);
+    const h = 40 + lines.length*14;
+    y = ensureSpace(y, h);
+    card(50,y,495,h);
+    label(k.toUpperCase(), 64, y+18);
+    doc.setTextColor(WHITE); doc.setFont("helvetica","normal"); doc.setFontSize(11);
+    doc.text(lines, 64, y+36);
+    y += h + 12;
+  });
+
+  // PAGE 7 — CIERRE + CTA
+  doc.addPage(); pageBg();
+  pageTitle("Para cerrar", "Tu negocio no necesita más improvisación", 78);
+  doc.setFont("helvetica","bold"); doc.setFontSize(18); doc.setTextColor(WHITE);
+  doc.text("Necesita dirección.", 50, 112);
+  y = body("Las 4P no son una fórmula mágica para garantizar que vas a crecer. Son un marco para entender por qué tu negocio puede estar creciendo, estancándose o perdiendo dinero.", 50, 150, 495, WHITE);
+  y = body('Antes de preguntarte "¿cómo consigo más clientes?", pregúntate: "¿está mi negocio preparado para recibirlos?"', 50, y+20, 495, GRAY);
+  y += 50;
+  doc.setFillColor(YELLOW); doc.roundedRect(50, y, 495, 76, 10, 10, "F");
+  doc.setTextColor(BLACK); doc.setFont("helvetica","bold"); doc.setFontSize(15);
+  doc.text("Agenda tu Sesión Power 3 con Caleb De La Piedra", 66, y+30);
+  doc.setFont("helvetica","normal"); doc.setFontSize(10);
+  doc.textWithLink("calendar.app.google/hR8SAyBPVnHdXxW16 →", 66, y+54, { url:"https://calendar.app.google/hR8SAyBPVnHdXxW16" });
+  doc.setFontSize(9); doc.setTextColor(GRAY);
+  doc.text("Hecho por Caleb De La Piedra — POWER 3", 50, 800);
+
+  doc.save(`Diagnostico-4P-${(st.contacto.nombre||"negocio").replace(/\s+/g,"-")}.pdf`);
+  dlBtn.textContent = originalLabel;
+  dlBtn.disabled = false;
+}
+</script>
+</body>
+</html>
